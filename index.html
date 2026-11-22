@@ -102,6 +102,7 @@ label input,label select{width:100%}
 .result .x{font-family:var(--f-mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
 svg.bell{width:100%;height:auto;max-width:100%;display:block}
 .ct input{width:70px;text-align:right;padding:5px 6px}
+.faces{display:flex;flex-wrap:wrap;gap:6px}.faces label{display:flex;flex-direction:row;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);color:var(--ink);font-size:14px;cursor:pointer}.faces input{width:auto;margin:0}
 .ct td,.ct th{padding:4px 6px}
 .tag{font-size:13px;padding:4px 10px;border-radius:999px;font-weight:600;display:inline-block}
 .tag.s{background:var(--curve-soft);color:var(--curve)}
@@ -264,6 +265,15 @@ svg.bell{width:100%;height:auto;max-width:100%;display:block}
     <div class="result" id="cres"></div>
   </div>
 
+  <div class="calc" id="c-dado">
+    <h2>Unión e intersección con un dado (u otro conjunto de resultados)</h2>
+    <p class="muted">Para preguntas como "par o mayor que 4". Marca qué resultados cumplen A y cuáles cumplen B. Viene cargada la pregunta 3: A = par, B = mayor que 4.</p>
+    <div class="grid"><label>Cantidad de resultados posibles<input id="dn" type="number" min="2" max="20" value="6"></label></div>
+    <div><div class="muted" style="margin-bottom:4px"><b>Suceso A</b></div><div class="faces" id="fa"></div></div>
+    <div><div class="muted" style="margin-bottom:4px"><b>Suceso B</b></div><div class="faces" id="fb"></div></div>
+    <div class="result" id="dres2"></div>
+  </div>
+
   <div class="calc" id="c-desc">
     <h2>Descriptivos, asimetría y curtosis</h2>
     <p class="muted">Pega tus datos (uno por línea, o separados por espacio o punto y coma). Viene cargado el sueldo de la Base práctica (60 trabajadores). Calcula igual que Excel.</p>
@@ -309,7 +319,7 @@ addEventListener('hashchange',()=>{show();scrollTo(0,0)});show();
 const Q=[
  {l:'Fácil',t:'Probabilidad básica',q:'Si P(A) = 0,35, ¿cuánto vale P(no A)?',o:['35%','65%','0%','100%'],a:1,e:'Complemento: P(no A) = 1 − 0,35 = 0,65 → 65%.'},
  {l:'Fácil',t:'Probabilidad básica',q:'Una urna tiene 8 rojas, 5 azules y 7 verdes. ¿Probabilidad de sacar una bolita amarilla?',o:['Suceso seguro (100%)','25%','Suceso imposible (0%)','No se puede calcular'],a:2,e:'No hay amarillas: 0 casos favorables de 20 → suceso imposible.'},
- {l:'Fácil',t:'Probabilidad básica',q:'Se lanza un dado. Escribe en % la probabilidad de obtener un número par o mayor que 4.',n:66.7,e:'Unión: {2,4,6} ∪ {5,6} = {2,4,5,6} → 4/6 = 66,7%. El 6 se cuenta una vez.'},
+ {l:'Fácil',t:'Probabilidad básica',q:'Se lanza un dado. Escribe en % la probabilidad de obtener un número par o mayor que 4.',n:66.7,e:'Unión: {2,4,6} ∪ {5,6} = {2,4,5,6} → 4/6 = 66,7%. El 6 se cuenta una vez. Puedes comprobarlo en Calculadoras → Unión e intersección con un dado.'},
  {l:'Fácil',t:'Intersección',q:'Tabla 1. "Se selecciona un estudiante al azar. ¿Probabilidad de que sea de Ingeniería y use la biblioteca?" ¿Cómo se calcula?',o:['66 / 120','66 / 200','66 / 300','120 / 300'],a:2,e:'"y" = intersección → celda directa ÷ total general: 66/300 = 22,0%.'},
  {l:'Fácil',t:'Intersección',q:'Tabla 1. Escribe en % la probabilidad de que un estudiante sea de Educación y no use la biblioteca.',n:4.3,e:'Celda Educación–No ÷ total general: 13/300 = 4,3%.'},
  {l:'Fácil',t:'Asimetría y curtosis',q:'Una variable tiene coeficiente de asimetría 0,82. ¿Cómo se clasifica?',o:['Simétrica','Asimétrica positiva (media > mediana)','Asimétrica negativa (media < mediana)','Leptocúrtica'],a:1,e:'0,82 > 0,5 → asimétrica positiva: los datos se concentran a la izquierda y la cola va a la derecha.'},
@@ -405,6 +415,22 @@ function ct(){const v=rows.map((r,i)=>cols.map((c,j)=>parseNum($('#ct'+i+j).valu
    +card(`P(${B} | ${A}) · dado que es ${A}`,c/rt[i],`${n(c)} / ${n(rt[i])} → total de ${A}`)
    +card(`P(${A} | ${B}) · dado que es ${B}`,c/ctot[j],`${n(c)} / ${n(ctot[j])} → total de ${B}`);}
 buildCT();ct();
+
+// ---------- dado: unión e intersección ----------
+let selA=new Set([2,4,6]),selB=new Set([5,6]);
+function buildFaces(){const n=Math.min(20,Math.max(2,parseInt($('#dn').value)||6));
+  ['fa','fb'].forEach((id,k)=>{const set=k?selB:selA;[...set].forEach(v=>{if(v>n)set.delete(v);});
+    $('#'+id).innerHTML=Array.from({length:n},(_,i)=>i+1).map(v=>`<label><input type="checkbox" value="${v}" ${set.has(v)?'checked':''}>${v}</label>`).join('');
+    $('#'+id).querySelectorAll('input').forEach(c=>c.addEventListener('change',()=>{c.checked?set.add(+c.value):set.delete(+c.value);dado();}));});
+  dado();}
+function dado(){const n=Math.min(20,Math.max(2,parseInt($('#dn').value)||6));
+  const A=[...selA].sort((a,b)=>a-b),B=[...selB].sort((a,b)=>a-b),I=A.filter(v=>selB.has(v)),U=[...new Set([...A,...B])].sort((a,b)=>a-b);
+  const L=a=>'{'+a.join(', ')+'}';const c=(l,k,f)=>`<div><div class="l">${l}</div><div class="n">${pct(k/n)}</div><div class="x">${f}</div></div>`;
+  $('#dres2').innerHTML=c('P(A)',A.length,`${L(A)} → ${A.length}/${n}`)+c('P(B)',B.length,`${L(B)} → ${B.length}/${n}`)
+   +c('P(A y B) · intersección',I.length,`${L(I)} → ${I.length}/${n}`)
+   +c('P(A o B) · unión',U.length,`${L(U)} → ${U.length}/${n} = (${A.length} + ${B.length} − ${I.length})/${n}`)
+   +c('P(no A) · complemento',n-A.length,`1 − ${A.length}/${n}`);}
+$('#dn').addEventListener('input',buildFaces);buildFaces();
 
 // ---------- descriptivos ----------
 const SUELDO=[850,880,820,750,800,740,860,1000,800,780,900,890,860,750,850,930,700,800,640,710,650,820,710,880,870,830,570,790,840,860,680,800,740,760,970,760,850,950,790,840,860,860,720,860,1000,680,940,860,780,1070,930,720,860,910,830,930,840,920,1010,780];
