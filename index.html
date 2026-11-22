@@ -1,0 +1,437 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Guía Tema 3 · Probabilidad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cuaderno de estudio con 3 pestañas (Conceptos · Práctica · Calculadoras), columna central de lectura y tarjetas solo donde hay interacción */
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#16202E; --muted:#5A6678; --line:#DCE2EA;
+  --accent:#2347B8; --accent-soft:#E6ECFB; --curve:#1F8A70; --curve-soft:#DDF2EA;
+  --good:#1E7F4F; --good-soft:#E2F4EA; --bad:#B3352B; --bad-soft:#FBE7E5; --warn:#9A6A00; --warn-soft:#FFF4D6;
+  --f-display:"Space Grotesk",system-ui,sans-serif; --f-body:"Inter",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171E28; --ink:#E6EBF2; --muted:#9AA6B6; --line:#2A3441;
+  --accent:#8FA8FF; --accent-soft:#1E2A4A; --curve:#4CC7A3; --curve-soft:#163A31;
+  --good:#5FD09A; --good-soft:#143326; --bad:#FF8A80; --bad-soft:#3A1C1A; --warn:#F2C14E; --warn-soft:#3A2E10; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171E28; --ink:#E6EBF2; --muted:#9AA6B6; --line:#2A3441;
+  --accent:#8FA8FF; --accent-soft:#1E2A4A; --curve:#4CC7A3; --curve-soft:#163A31;
+  --good:#5FD09A; --good-soft:#143326; --bad:#FF8A80; --bad-soft:#3A1C1A; --warn:#F2C14E; --warn-soft:#3A2E10; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.brand small{display:block;font-family:var(--f-body);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:.02em}
+nav.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:10px;border:1px solid var(--line)}
+nav.tabs a{font-weight:600;font-size:14px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:7px}
+nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:28px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15}
+h2{font-size:22px;margin-bottom:6px}
+h3{font-size:17px}
+.lede{color:var(--muted);max-width:65ch;margin:8px 0 0}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+section.view{display:grid;gap:28px}
+.concept{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;padding-block:22px;border-top:1px solid var(--line)}
+.concept .body{min-width:0;display:grid;gap:10px}
+.concept p{margin:0;max-width:68ch}
+.concept ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.f{font-family:var(--f-mono);font-size:13.5px;background:var(--accent-soft);color:var(--ink);padding:1px 6px;border-radius:5px;white-space:nowrap}
+.fbox{font-family:var(--f-mono);font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;overflow-x:auto}
+.clue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.clue div{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 14px}
+.clue b{font-family:var(--f-display)}
+.scale{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px}
+.scale div{padding:10px 12px;background:var(--surface)}
+.scale div+div{border-left:1px solid var(--line)}
+.scale .mid{background:var(--curve-soft)}
+.scale em{display:block;font-style:normal;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px;min-width:420px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--accent-soft);font-weight:600}
+tr.tot td{font-weight:600}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:500 13px var(--f-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.score{margin-left:auto;font-family:var(--f-display);font-weight:600;font-variant-numeric:tabular-nums}
+.refs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.refs>div{min-width:0}
+.refs h3{font-size:14px;margin-bottom:6px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:10px}
+.qhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.lvl{font-weight:600;padding:2px 8px;border-radius:999px}
+.lvl.Fácil{background:var(--good-soft);color:var(--good)}
+.lvl.Medio{background:var(--warn-soft);color:var(--warn)}
+.lvl.Difícil{background:var(--bad-soft);color:var(--bad)}
+.qtext{font-weight:500;max-width:70ch}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:9px 12px;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{font-family:var(--f-mono);font-weight:500;color:var(--muted);min-width:1.2em}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.numrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=number],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input[type=number],input[type=text]{width:130px}
+textarea{width:100%;min-height:90px;font-family:var(--f-mono);font-size:13px}
+.btn{font:600 14px var(--f-body);border:0;background:var(--accent);color:var(--surface);border-radius:8px;padding:9px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.fb{border-radius:8px;padding:10px 12px;font-size:14px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb b{display:block;margin-bottom:2px}
+.qlist{display:grid;gap:14px}
+.calcs{display:grid;gap:22px}
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;gap:14px}
+.calc .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label{display:grid;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+label input,label select{width:100%}
+.result{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.result div{background:var(--bg);border-radius:10px;padding:10px 12px;min-width:0}
+.result .n{font-family:var(--f-display);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums}
+.result .l{font-size:12px;color:var(--muted)}
+.result .x{font-family:var(--f-mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+svg.bell{width:100%;height:auto;max-width:100%;display:block}
+.ct input{width:70px;text-align:right;padding:5px 6px}
+.ct td,.ct th{padding:4px 6px}
+.tag{font-size:13px;padding:4px 10px;border-radius:999px;font-weight:600;display:inline-block}
+.tag.s{background:var(--curve-soft);color:var(--curve)}
+.tag.p{background:var(--warn-soft);color:var(--warn)}
+.tag.n{background:var(--bad-soft);color:var(--bad)}
+.muted{color:var(--muted);font-size:13px}
+@media (max-width:700px){.concept{grid-template-columns:1fr;gap:8px}.clue,.refs{grid-template-columns:1fr}.scale{grid-template-columns:1fr}.scale div+div{border-left:0;border-top:1px solid var(--line)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">Tema 3 · Probabilidad y normal<small>Análisis de Datos · guía de estudio</small></div>
+  <nav class="tabs" aria-label="Secciones">
+    <a href="#conceptos" data-v="conceptos">Conceptos</a>
+    <a href="#practica" data-v="practica">Práctica</a>
+    <a href="#calculadoras" data-v="calculadoras">Calculadoras</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- ============ CONCEPTOS ============ -->
+<section class="view" id="v-conceptos">
+  <div>
+    <div class="eyebrow">Repaso</div>
+    <h1>Lo que tienes que saber del Tema 3</h1>
+    <p class="lede">Resumen de los PPT con las reglas que usa tu curso. Redondea siempre los porcentajes a 1 decimal.</p>
+  </div>
+
+  <div>
+  <div class="concept"><h2>Probabilidad básica</h2><div class="body">
+    <div class="fbox">P(A) = casos favorables ÷ casos totales</div>
+    <ul>
+      <li>Va de 0 a 1 (0% a 100%). <b>Suceso seguro</b> = 100%, <b>imposible</b> = 0%.</li>
+      <li><b>Complemento:</b> P(no A) = 1 − P(A). Ej.: si P(verde)=35%, P(no verde)=65%.</li>
+      <li><b>Mutuamente excluyentes:</b> no pueden pasar a la vez (ser de Ingeniería y de Salud).</li>
+      <li>Experimento aleatorio → espacio muestral (todos los resultados) → suceso (los que te interesan).</li>
+    </ul>
+  </div></div>
+
+  <div class="concept"><h2>Intersección y unión</h2><div class="body">
+    <ul>
+      <li><b>"y" / "con" = intersección (A∩B):</b> la celda directa de la tabla ÷ total general.</li>
+      <li><b>"o" = unión (A∪B):</b> se suman sin contar dos veces lo común.</li>
+    </ul>
+    <div class="fbox">P(A∪B) = P(A) + P(B) − P(A∩B)</div>
+    <p class="muted">Dado: P(par o mayor que 4) = {2,4,6} ∪ {5,6} = {2,4,5,6} → 4/6 = 66,7%. El 6 se cuenta una sola vez.</p>
+  </div></div>
+
+  <div class="concept"><h2>Condicional</h2><div class="body">
+    <div class="fbox">P(A | B) = P(A∩B) ÷ P(B) = casos de A dentro de B ÷ casos de B</div>
+    <p>La condición te dice <b>en qué grupo ya estás</b>. Ese grupo pasa a ser el denominador.</p>
+    <div class="clue">
+      <div><b>Intersección</b><br>"…sea de Ingeniería <u>y</u> use biblioteca"<br><span class="f">66 / 300</span> → total general</div>
+      <div><b>Condicional</b><br>"<u>Si se selecciona uno</u> de Ingeniería…", "<u>dado que</u>…", "<u>sabiendo que</u>…"<br><span class="f">66 / 120</span> → total del grupo conocido</div>
+    </div>
+    <p class="muted">Ojo: P(Usa | Ingeniería) = 66/120 no es lo mismo que P(Ingeniería | Usa) = 66/200.</p>
+  </div></div>
+
+  <div class="concept"><h2>Probabilidad conjunta</h2><div class="body">
+    <ul>
+      <li><b>Con reemplazo</b> (independientes): <span class="f">P(A∩B) = P(A)·P(B)</span></li>
+      <li><b>Sin reemplazo</b> (dependientes): <span class="f">P(A∩B) = P(A)·P(B|A)</span>. En la 2ª extracción hay un elemento menos.</li>
+    </ul>
+    <p class="muted">Caja 6 rojas y 4 azules, 2 rojas: con reemplazo 6/10·6/10 = 36%; sin reemplazo 6/10·5/9 = 33,3%.</p>
+  </div></div>
+
+  <div class="concept"><h2>Asimetría y curtosis</h2><div class="body">
+    <p><b>Coeficiente de asimetría</b> (Excel: <span class="f">COEFICIENTE.ASIMETRIA</span>)</p>
+    <div class="scale">
+      <div>Negativa<em>&lt; −0,5</em>media &lt; mediana, cola a la izquierda</div>
+      <div class="mid">Simétrica<em>[−0,5 ; 0,5]</em>media ≈ mediana</div>
+      <div>Positiva<em>&gt; 0,5</em>media &gt; mediana, datos concentrados a la izquierda, cola a la derecha</div>
+    </div>
+    <p><b>Curtosis</b> (Excel: <span class="f">CURTOSIS</span>)</p>
+    <div class="scale">
+      <div>Platicúrtica<em>&lt; −0,5</em>baja concentración, curva aplanada</div>
+      <div class="mid">Mesocúrtica<em>[−0,5 ; 0,5]</em>como la normal</div>
+      <div>Leptocúrtica<em>&gt; 0,5</em>alta concentración, curva puntiaguda</div>
+    </div>
+  </div></div>
+
+  <div class="concept"><h2>Distribución normal</h2><div class="body">
+    <p>Se escribe <span class="f">X ~ N(μ, σ)</span>. Ej.: gestación N(266, 16).</p>
+    <p><b>¿Cuándo una variable es normal?</b> Histograma en forma de campana, media ≈ mediana ≈ moda, y asimetría y curtosis en [−0,5 ; 0,5]. (La normal teórica tiene asimetría 0 y curtosis 0.)</p>
+    <p><b>Regla empírica:</b> μ ± 1σ ≈ 68% · μ ± 2σ ≈ 95% · μ ± 3σ ≈ 99,7%</p>
+    <div class="tablebox"><table>
+      <thead><tr><th>Te preguntan</th><th>Fórmula en Excel</th></tr></thead>
+      <tbody>
+        <tr><td>"x o menos", "menos de x", "a lo más"</td><td><span class="f">=DIST.NORM(x;μ;σ;1)</span></td></tr>
+        <tr><td>"más de x", "al menos x"</td><td><span class="f">=1-DIST.NORM(x;μ;σ;1)</span></td></tr>
+        <tr><td>"entre a y b"</td><td><span class="f">=DIST.NORM(b;μ;σ;1)-DIST.NORM(a;μ;σ;1)</span></td></tr>
+      </tbody>
+    </table></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ============ PRÁCTICA ============ -->
+<section class="view" id="v-practica" hidden>
+  <div>
+    <div class="eyebrow">Selección simple y cálculo</div>
+    <h1>Práctica con corrección al instante</h1>
+    <p class="lede">Elige una alternativa o escribe tu resultado en % (con 1 decimal, por ejemplo 24,4). Al responder ves si está bien y por qué.</p>
+  </div>
+
+  <div class="refs">
+    <div><h3>Tabla 1 · Uso de biblioteca según carrera (300 estudiantes)</h3><div class="tablebox"><table>
+      <thead><tr><th>Carrera</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+      <tbody><tr><td>Ingeniería</td><td>66</td><td>54</td><td>120</td></tr><tr><td>Salud</td><td>102</td><td>33</td><td>135</td></tr><tr><td>Educación</td><td>32</td><td>13</td><td>45</td></tr><tr class="tot"><td>Total</td><td>200</td><td>100</td><td>300</td></tr></tbody>
+    </table></div></div>
+    <div><h3>Tabla 2 · Clientes por canal y satisfacción (% del total)</h3><div class="tablebox"><table>
+      <thead><tr><th>Canal</th><th>Muy satisf.</th><th>Satisf.</th><th>Insatisf.</th><th>Total</th></tr></thead>
+      <tbody><tr><td>Tienda</td><td>12,5</td><td>14,0</td><td>6,5</td><td>33,0</td></tr><tr><td>Web</td><td>9,0</td><td>16,5</td><td>10,5</td><td>36,0</td></tr><tr><td>App</td><td>14,5</td><td>11,0</td><td>5,5</td><td>31,0</td></tr><tr class="tot"><td>Total</td><td>36,0</td><td>41,5</td><td>22,5</td><td>100</td></tr></tbody>
+    </table></div></div>
+  </div>
+
+  <div class="toolbar" id="filters">
+    <button class="chip" data-f="Todas" aria-pressed="true">Todas</button>
+    <button class="chip" data-f="Fácil" aria-pressed="false">Fácil</button>
+    <button class="chip" data-f="Medio" aria-pressed="false">Medio</button>
+    <button class="chip" data-f="Difícil" aria-pressed="false">Difícil</button>
+    <button class="chip" id="reset" aria-pressed="false">Reiniciar</button>
+    <span class="score" id="score">0 / 0 correctas</span>
+  </div>
+  <div class="qlist" id="qlist"></div>
+</section>
+
+<!-- ============ CALCULADORAS ============ -->
+<section class="view" id="v-calculadoras" hidden>
+  <div>
+    <div class="eyebrow">Calcula aquí mismo</div>
+    <h1>Calculadoras</h1>
+    <p class="lede">Úsalas para comprobar tus resultados. Cada una te muestra también la fórmula que escribirías en Excel.</p>
+  </div>
+  <div class="calcs">
+
+  <div class="calc" id="c-normal">
+    <h2>Distribución normal (DIST.NORM)</h2>
+    <div class="grid">
+      <label>Media μ<input id="nm" type="number" step="any" value="923"></label>
+      <label>Desviación σ<input id="ns" type="number" step="any" value="112.08"></label>
+      <label>Te preguntan
+        <select id="nt"><option value="le">x o menos / menos de x</option><option value="ge">más de x / al menos x</option><option value="bt" selected>entre a y b</option></select></label>
+      <label>x (o a)<input id="na" type="number" step="any" value="900"></label>
+      <label id="nbl">b<input id="nb" type="number" step="any" value="1100"></label>
+    </div>
+    <svg class="bell" id="bell" viewBox="0 0 640 190" role="img" aria-label="Curva normal con el área sombreada"></svg>
+    <div class="result" id="nres"></div>
+  </div>
+
+  <div class="calc" id="c-tabla">
+    <h2>Tabla de contingencia: intersección, unión y condicional</h2>
+    <p class="muted">Escribe tus conteos (o %). Viene cargada la Tabla 1. Luego elige la fila A y la columna B.</p>
+    <div class="tablebox"><table class="ct" id="ct"></table></div>
+    <div class="grid">
+      <label>A (fila)<select id="ca"></select></label>
+      <label>B (columna)<select id="cb"></select></label>
+    </div>
+    <div class="result" id="cres"></div>
+  </div>
+
+  <div class="calc" id="c-desc">
+    <h2>Descriptivos, asimetría y curtosis</h2>
+    <p class="muted">Pega tus datos (uno por línea, o separados por espacio o punto y coma). Viene cargado el sueldo de la Base práctica (60 trabajadores). Calcula igual que Excel.</p>
+    <textarea id="dd"></textarea>
+    <div class="result" id="dres"></div>
+    <div id="dclass"></div>
+  </div>
+
+  <div class="calc" id="c-urna">
+    <h2>Probabilidad conjunta (2 extracciones)</h2>
+    <div class="grid">
+      <label>Total de elementos<input id="ut" type="number" min="2" value="10"></label>
+      <label>Casos tipo A<input id="ua" type="number" min="0" value="6"></label>
+      <label>Casos tipo B<input id="ub" type="number" min="0" value="6"></label>
+      <label>¿A y B son el mismo grupo?<select id="us"><option value="1" selected>Sí (ej. roja y roja)</option><option value="0">No (ej. roja y azul)</option></select></label>
+    </div>
+    <div class="result" id="ures"></div>
+  </div>
+
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+// ---------- utilidades ----------
+const $=s=>document.querySelector(s);
+const fmt=(x,d=1)=>isFinite(x)?x.toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const pct=p=>fmt(Math.round(p*1000+1e-9)/10,1)+'%';
+function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+const Phi=(x,m,s)=>0.5*(1+erf((x-m)/(s*Math.SQRT2)));
+const parseNum=v=>parseFloat(String(v).replace(/\s/g,'').replace('%','').replace(',','.'));
+
+// ---------- pestañas ----------
+const views=['conceptos','practica','calculadoras'];
+function show(){const h=location.hash.slice(1);const v=views.includes(h)?h:'conceptos';
+  views.forEach(n=>{$('#v-'+n).hidden=n!==v;});
+  document.querySelectorAll('nav.tabs a').forEach(a=>a.setAttribute('aria-current',a.dataset.v===v?'page':'false'));}
+addEventListener('hashchange',()=>{show();scrollTo(0,0)});show();
+
+// ---------- preguntas ----------
+const Q=[
+ {l:'Fácil',t:'Probabilidad básica',q:'Si P(A) = 0,35, ¿cuánto vale P(no A)?',o:['35%','65%','0%','100%'],a:1,e:'Complemento: P(no A) = 1 − 0,35 = 0,65 → 65%.'},
+ {l:'Fácil',t:'Probabilidad básica',q:'Una urna tiene 8 rojas, 5 azules y 7 verdes. ¿Probabilidad de sacar una bolita amarilla?',o:['Suceso seguro (100%)','25%','Suceso imposible (0%)','No se puede calcular'],a:2,e:'No hay amarillas: 0 casos favorables de 20 → suceso imposible.'},
+ {l:'Fácil',t:'Probabilidad básica',q:'Se lanza un dado. Escribe en % la probabilidad de obtener un número par o mayor que 4.',n:66.7,e:'Unión: {2,4,6} ∪ {5,6} = {2,4,5,6} → 4/6 = 66,7%. El 6 se cuenta una vez.'},
+ {l:'Fácil',t:'Intersección',q:'Tabla 1. "Se selecciona un estudiante al azar. ¿Probabilidad de que sea de Ingeniería y use la biblioteca?" ¿Cómo se calcula?',o:['66 / 120','66 / 200','66 / 300','120 / 300'],a:2,e:'"y" = intersección → celda directa ÷ total general: 66/300 = 22,0%.'},
+ {l:'Fácil',t:'Intersección',q:'Tabla 1. Escribe en % la probabilidad de que un estudiante sea de Educación y no use la biblioteca.',n:4.3,e:'Celda Educación–No ÷ total general: 13/300 = 4,3%.'},
+ {l:'Fácil',t:'Asimetría y curtosis',q:'Una variable tiene coeficiente de asimetría 0,82. ¿Cómo se clasifica?',o:['Simétrica','Asimétrica positiva (media > mediana)','Asimétrica negativa (media < mediana)','Leptocúrtica'],a:1,e:'0,82 > 0,5 → asimétrica positiva: los datos se concentran a la izquierda y la cola va a la derecha.'},
+ {l:'Fácil',t:'Asimetría y curtosis',q:'Una variable tiene curtosis −0,73. ¿Cómo se clasifica?',o:['Leptocúrtica','Mesocúrtica','Platicúrtica','Simétrica'],a:2,e:'−0,73 < −0,5 → platicúrtica (baja concentración, curva aplanada).'},
+ {l:'Fácil',t:'Regla empírica',q:'X ~ N(170, 8). ¿Qué % aproximado está entre 154 y 186?',o:['68%','95%','99,7%','50%'],a:1,e:'154 y 186 son 170 ± 16 = μ ± 2σ → ≈ 95%.'},
+ {l:'Medio',t:'Condicional',q:'Tabla 1. "Si se selecciona un estudiante de Ingeniería, ¿probabilidad de que use la biblioteca?"',o:['22,0%','33,0%','55,0%','66,0%'],a:2,e:'"Si se selecciona uno de…" = condicional → ÷ total de Ingeniería: 66/120 = 55,0%.'},
+ {l:'Medio',t:'Condicional',q:'Tabla 1. "Sabiendo que el estudiante usa la biblioteca, ¿probabilidad de que sea de Ingeniería?" ¿Cuál es el denominador?',o:['300 (total general)','120 (total Ingeniería)','200 (total que usa biblioteca)','66'],a:2,e:'El grupo conocido son los que usan biblioteca (200): 66/200 = 33,0%.'},
+ {l:'Medio',t:'Condicional',q:'Tabla 1. Escribe en %: dado que un estudiante es de Salud, ¿probabilidad de que no use la biblioteca?',n:24.4,e:'Grupo conocido Salud (135): 33/135 = 24,4%.'},
+ {l:'Medio',t:'Unión',q:'Tabla 1. ¿Probabilidad de que un estudiante sea de Salud o no use la biblioteca?',o:['78,3%','67,3%','11,0%','45,0%'],a:1,e:'(135 + 100 − 33)/300 = 202/300 = 67,3%. Se resta 33 para no contar dos veces a los de Salud que no usan.'},
+ {l:'Medio',t:'Conjunta',q:'Caja con 6 rojas y 4 azules. Se sacan 2 CON reemplazo. ¿Probabilidad de que ambas sean rojas?',o:['33,3%','36,0%','60,0%','24,0%'],a:1,e:'Independientes: (6/10)·(6/10) = 0,36 → 36,0%.'},
+ {l:'Medio',t:'Conjunta',q:'Misma caja, ahora SIN reemplazo. Escribe en % la probabilidad de que la 1ª sea roja y la 2ª azul.',n:26.7,e:'Dependientes: (6/10)·(4/9) = 0,2667 → 26,7%.'},
+ {l:'Medio',t:'Normal',q:'En Excel, ¿qué fórmula usas para "más de 1.100"?',o:['=DIST.NORM(1100;μ;σ;1)','=1-DIST.NORM(1100;μ;σ;1)','=DIST.NORM(1100;μ;σ;0)','=1100-DIST.NORM(μ;σ;1)'],a:1,e:'"más de" o "al menos" = 1 − acumulada.'},
+ {l:'Medio',t:'Normal',q:'Sueldo de egresados N(923; 112,08). ¿Probabilidad de ganar 800 mil o menos?',o:['13,6%','86,4%','50,0%','5,7%'],a:0,e:'=DIST.NORM(800;923;112,08;1) = 0,1362 → 13,6%.'},
+ {l:'Medio',t:'Normal',q:'Sueldo de egresados N(923; 112,08). Escribe en % la probabilidad de ganar entre 900 y 1.100 mil.',n:52.4,e:'=DIST.NORM(1100;…;1) − DIST.NORM(900;…;1) = 0,9428 − 0,4187 = 52,4%.'},
+ {l:'Difícil',t:'Asimetría y curtosis',q:'Una variable tiene asimetría −0,21 y curtosis 1,35. ¿Puede ser normal?',o:['Sí, porque es simétrica','No, porque es leptocúrtica','No, porque es asimétrica negativa','Sí, porque la curtosis es positiva'],a:1,e:'La asimetría sí está en [−0,5 ; 0,5], pero la curtosis 1,35 > 0,5 → leptocúrtica. Deben cumplirse las dos.'},
+ {l:'Difícil',t:'Normal',q:'Para que una variable sea aproximadamente normal, ¿qué NO es un criterio?',o:['Histograma en forma de campana','Media, mediana y moda parecidas','Asimetría y curtosis en [−0,5 ; 0,5]','Que la desviación estándar sea menor que 1'],a:3,e:'La desviación estándar puede tener cualquier valor positivo; no es criterio de normalidad.'},
+ {l:'Difícil',t:'Condicional',q:'Tabla 2. "Si se selecciona un cliente muy satisfecho, ¿probabilidad de que haya comprado por App?"',o:['14,5%','46,8%','40,3%','36,0%'],a:2,e:'Grupo conocido: Muy satisfecho (36%). 14,5/36 = 40,3%. (46,8% sería 14,5/31, que es al revés: P(Muy satisf. | App).)'},
+ {l:'Difícil',t:'Condicional',q:'Tabla 2. Escribe en %: dado que un cliente compró por Web, ¿probabilidad de que esté insatisfecho?',n:29.2,e:'10,5 / 36 = 29,2%.'},
+ {l:'Difícil',t:'Unión',q:'Tabla 2. Escribe en % la probabilidad de que un cliente compre en Tienda o esté muy satisfecho.',n:56.5,e:'33 + 36 − 12,5 = 56,5%.'},
+ {l:'Difícil',t:'Normal',q:'Tiempo de traslado N(45,22; 12,87). Escribe en % la probabilidad de demorar al menos 60 minutos.',n:12.5,e:'=1-DIST.NORM(60;45,22;12,87;1) = 1 − 0,8750 = 12,5%.'},
+ {l:'Difícil',t:'Conjunta',q:'De 60 trabajadores, 16 son de Administración. Se eligen 2 SIN reemplazo. Escribe en % la probabilidad de que ambos sean de Administración.',n:6.8,e:'(16/60)·(15/59) = 0,0678 → 6,8%.'},
+ {l:'Difícil',t:'Asimetría y curtosis',q:'Horas extra: promedio 6,35, mediana 5, asimetría 2,21, curtosis 6,37. ¿Qué interpretación es correcta?',o:['Simétrica y mesocúrtica','La mayoría hace pocas horas extra y unos pocos hacen muchas','La mayoría hace muchas horas extra','Es normal porque la media es cercana a la mediana'],a:1,e:'Asimetría positiva y leptocúrtica: los datos se concentran a la izquierda (pocas horas) con una cola larga a la derecha. Por eso media > mediana.'}
+];
+let filter='Todas';const state={};
+function render(){
+  const list=$('#qlist');list.innerHTML='';
+  Q.forEach((x,i)=>{ if(filter!=='Todas'&&x.l!==filter)return;
+    const d=document.createElement('article');d.className='q';
+    d.innerHTML=`<div class="qhead"><b>Pregunta ${i+1}</b><span class="lvl ${x.l}">${x.l}</span><span>${x.t}</span></div><div class="qtext">${x.q}</div>`;
+    const st=state[i];
+    if(x.o){const box=document.createElement('div');box.className='opts';
+      x.o.forEach((o,j)=>{const b=document.createElement('button');b.className='opt';b.type='button';
+        b.innerHTML=`<span class="k">${'abcd'[j]})</span><span>${o}</span>`;
+        if(st){b.disabled=true;if(j===x.a)b.classList.add('ok');else if(j===st.pick)b.classList.add('no');}
+        b.onclick=()=>{state[i]={pick:j,ok:j===x.a};render();};box.appendChild(b);});
+      d.appendChild(box);}
+    else{const row=document.createElement('div');row.className='numrow';
+      row.innerHTML=`<input type="text" inputmode="decimal" id="n${i}" placeholder="ej. 24,4" ${st?'disabled value="'+st.val+'"':''}><span>%</span><button class="btn" type="button" ${st?'disabled':''}>Comprobar</button>`;
+      const go=()=>{const v=parseNum(row.querySelector('input').value);if(!isFinite(v))return;
+        state[i]={val:row.querySelector('input').value,ok:Math.abs(v-x.n)<=0.15};render();};
+      row.querySelector('button').onclick=go;row.querySelector('input').onkeydown=e=>{if(e.key==='Enter')go();};
+      d.appendChild(row);}
+    if(st){const f=document.createElement('div');f.className='fb '+(st.ok?'ok':'no');
+      f.innerHTML=`<b>${st.ok?'Correcto':'Incorrecto'}${x.n!==undefined?' · respuesta: '+fmt(x.n)+'%':''}</b>${x.e}`;d.appendChild(f);}
+    list.appendChild(d);});
+  const done=Object.keys(state).length,ok=Object.values(state).filter(s=>s.ok).length;
+  $('#score').textContent=`${ok} / ${done} correctas · ${Q.length} preguntas`;
+}
+document.querySelectorAll('#filters .chip[data-f]').forEach(c=>c.onclick=()=>{filter=c.dataset.f;
+  document.querySelectorAll('#filters .chip[data-f]').forEach(k=>k.setAttribute('aria-pressed',k===c));render();});
+$('#reset').onclick=()=>{for(const k in state)delete state[k];render();};
+render();
+
+// ---------- calculadora normal ----------
+function normal(){
+  const m=parseNum($('#nm').value),s=parseNum($('#ns').value),t=$('#nt').value,a=parseNum($('#na').value),b=parseNum($('#nb').value);
+  $('#nbl').hidden=t!=='bt';
+  const out=$('#nres');if(!(s>0)||!isFinite(m)||!isFinite(a)||(t==='bt'&&!isFinite(b))){out.innerHTML='<div><div class="l">Revisa los datos: σ debe ser mayor que 0.</div></div>';return;}
+  let p,lo,hi,f;const M=fmt(m,2),S=fmt(s,2);
+  if(t==='le'){p=Phi(a,m,s);lo=-Infinity;hi=a;f=`=DIST.NORM(${fmt(a,2)};${M};${S};1)`;}
+  else if(t==='ge'){p=1-Phi(a,m,s);lo=a;hi=Infinity;f=`=1-DIST.NORM(${fmt(a,2)};${M};${S};1)`;}
+  else{const x1=Math.min(a,b),x2=Math.max(a,b);p=Phi(x2,m,s)-Phi(x1,m,s);lo=x1;hi=x2;f=`=DIST.NORM(${fmt(x2,2)};${M};${S};1)-DIST.NORM(${fmt(x1,2)};${M};${S};1)`;}
+  const z=x=>fmt((x-m)/s,2);
+  out.innerHTML=`<div><div class="l">Probabilidad</div><div class="n">${pct(p)}</div><div class="x">${fmt(p,4)}</div></div>
+   <div style="grid-column:span 2"><div class="l">Fórmula en Excel</div><div class="x" style="font-size:13px;color:var(--ink)">${f}</div></div>
+   <div><div class="l">Valor z</div><div class="x" style="font-size:13px;color:var(--ink)">${t==='bt'?'z₁ = '+z(lo)+' · z₂ = '+z(hi):'z = '+z(a)}</div></div>`;
+  // curva
+  const W=640,H=190,pad=24,x0=m-4*s,x1=m+4*s,X=x=>pad+(x-x0)/(x1-x0)*(W-2*pad),Y=y=>H-28-y*(H-50);
+  const pdf=x=>Math.exp(-0.5*((x-m)/s)**2);let line='',area='';const N=160;
+  for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N;line+=(i?'L':'M')+X(x).toFixed(1)+' '+Y(pdf(x)).toFixed(1);}
+  const L=Math.max(lo,x0),R=Math.min(hi,x1);
+  if(R>L){area='M'+X(L).toFixed(1)+' '+Y(0);for(let i=0;i<=N;i++){const x=L+(R-L)*i/N;area+='L'+X(x).toFixed(1)+' '+Y(pdf(x)).toFixed(1);}area+='L'+X(R).toFixed(1)+' '+Y(0)+'Z';}
+  let ticks='';for(let k=-3;k<=3;k++){const x=m+k*s;ticks+=`<line x1="${X(x)}" x2="${X(x)}" y1="${Y(0)}" y2="${Y(0)+5}" stroke="var(--muted)"/><text x="${X(x)}" y="${Y(0)+18}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="Inter,sans-serif">${k===0?'μ':(k>0?'+':'−')+Math.abs(k)+'σ'}</text>`;}
+  $('#bell').innerHTML=`<path d="${area}" fill="var(--curve-soft)" stroke="none"/><path d="${line}" fill="none" stroke="var(--curve)" stroke-width="2"/><line x1="${pad}" x2="${W-pad}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--line)"/>${ticks}<text x="${W-pad}" y="16" font-size="13" text-anchor="end" fill="var(--ink)" font-family="Space Grotesk,sans-serif" font-weight="600">Área sombreada = ${pct(p)}</text>`;
+}
+['nm','ns','nt','na','nb'].forEach(id=>$('#'+id).addEventListener('input',normal));normal();
+
+// ---------- tabla de contingencia ----------
+const rows=['Ingeniería','Salud','Educación'],cols=['Usa: Sí','Usa: No'];const cells=[[66,54],[102,33],[32,13]];
+function buildCT(){let h='<thead><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'<th>Total</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{h+=`<tr><td>${r}</td>`+cols.map((c,j)=>`<td><input type="number" min="0" step="any" id="ct${i}${j}" value="${cells[i][j]}"></td>`).join('')+`<td id="rt${i}"></td></tr>`;});
+  h+='<tr class="tot"><td>Total</td>'+cols.map((c,j)=>`<td id="cto${j}"></td>`).join('')+'<td id="gt"></td></tr></tbody>';$('#ct').innerHTML=h;
+  $('#ca').innerHTML=rows.map((r,i)=>`<option value="${i}">${r}</option>`).join('');$('#cb').innerHTML=cols.map((c,j)=>`<option value="${j}">${c}</option>`).join('');
+  document.querySelectorAll('#ct input').forEach(el=>el.addEventListener('input',ct));['ca','cb'].forEach(id=>$('#'+id).addEventListener('input',ct));}
+function ct(){const v=rows.map((r,i)=>cols.map((c,j)=>parseNum($('#ct'+i+j).value)||0));
+  const rt=v.map(r=>r.reduce((a,b)=>a+b,0)),ctot=cols.map((c,j)=>v.reduce((a,r)=>a+r[j],0)),g=rt.reduce((a,b)=>a+b,0);
+  rt.forEach((x,i)=>$('#rt'+i).textContent=fmt(x,0));ctot.forEach((x,j)=>$('#cto'+j).textContent=fmt(x,0));$('#gt').textContent=fmt(g,0);
+  const i=+$('#ca').value,j=+$('#cb').value,c=v[i][j],A=rows[i],B=cols[j];const n=x=>fmt(x,x%1?1:0);
+  const card=(l,p,f)=>`<div><div class="l">${l}</div><div class="n">${g?pct(p):'—'}</div><div class="x">${f}</div></div>`;
+  $('#cres').innerHTML=card(`P(${A})`,rt[i]/g,`${n(rt[i])} / ${n(g)}`)+card(`P(${B})`,ctot[j]/g,`${n(ctot[j])} / ${n(g)}`)
+   +card(`P(${A} y ${B}) · intersección`,c/g,`${n(c)} / ${n(g)} → total general`)
+   +card(`P(${A} o ${B}) · unión`,(rt[i]+ctot[j]-c)/g,`(${n(rt[i])} + ${n(ctot[j])} − ${n(c)}) / ${n(g)}`)
+   +card(`P(${B} | ${A}) · dado que es ${A}`,c/rt[i],`${n(c)} / ${n(rt[i])} → total de ${A}`)
+   +card(`P(${A} | ${B}) · dado que es ${B}`,c/ctot[j],`${n(c)} / ${n(ctot[j])} → total de ${B}`);}
+buildCT();ct();
+
+// ---------- descriptivos ----------
+const SUELDO=[850,880,820,750,800,740,860,1000,800,780,900,890,860,750,850,930,700,800,640,710,650,820,710,880,870,830,570,790,840,860,680,800,740,760,970,760,850,950,790,840,860,860,720,860,1000,680,940,860,780,1070,930,720,860,910,830,930,840,920,1010,780];
+$('#dd').value=SUELDO.join('\n');
+function desc(){const x=$('#dd').value.split(/[\s;\n]+/).map(parseNum).filter(isFinite);const n=x.length,out=$('#dres');
+  if(n<4){out.innerHTML='<div><div class="l">Ingresa al menos 4 datos (la curtosis de Excel necesita 4).</div></div>';$('#dclass').innerHTML='';return;}
+  const m=x.reduce((a,b)=>a+b,0)/n,s=[...x].sort((a,b)=>a-b),med=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;
+  const cnt=new Map();x.forEach(v=>cnt.set(v,(cnt.get(v)||0)+1));const mx=Math.max(...cnt.values());const moda=mx>1?x.find(v=>cnt.get(v)===mx):null;
+  const sd=Math.sqrt(x.reduce((a,v)=>a+(v-m)**2,0)/(n-1));
+  const sk=n/((n-1)*(n-2))*x.reduce((a,v)=>a+((v-m)/sd)**3,0);
+  const ku=n*(n+1)/((n-1)*(n-2)*(n-3))*x.reduce((a,v)=>a+((v-m)/sd)**4,0)-3*(n-1)**2/((n-2)*(n-3));
+  const c=(l,v,f)=>`<div><div class="l">${l}</div><div class="n">${v}</div><div class="x">${f}</div></div>`;
+  out.innerHTML=c('n (datos)',n,'=CONTAR(…)')+c('Promedio',fmt(m,2),'=PROMEDIO(…)')+c('Mediana',fmt(med,2),'=MEDIANA(…)')+c('Moda',moda===null?'No hay':fmt(moda,2),moda===null?'#N/A: ningún dato se repite':'=MODA(…) · se repite '+mx+' veces')
+   +c('Desv. estándar',fmt(sd,2),'=DESVEST(…)')+c('Asimetría',fmt(sk,2),'=COEFICIENTE.ASIMETRIA(…)')+c('Curtosis',fmt(ku,2),'=CURTOSIS(…)');
+  const ca=sk>0.5?['p','Asimétrica positiva (media > mediana)']:sk<-0.5?['n','Asimétrica negativa (media < mediana)']:['s','Simétrica'];
+  const ck=ku>0.5?['p','Leptocúrtica (alta concentración)']:ku<-0.5?['n','Platicúrtica (baja concentración)']:['s','Mesocúrtica'];
+  const norm=Math.abs(sk)<=0.5&&Math.abs(ku)<=0.5;
+  $('#dclass').innerHTML=`<div class="toolbar"><span class="tag ${ca[0]}">${ca[1]}</span><span class="tag ${ck[0]}">${ck[1]}</span><span class="tag ${norm?'s':'n'}">${norm?'Cumple asimetría y curtosis para ser normal':'No cumple los criterios de normalidad'}</span></div>
+   <p class="muted">${norm?'Revisa también que media, mediana y moda sean parecidas y que el histograma tenga forma de campana.':'Para ser normal, asimetría y curtosis deben estar ambas en [−0,5 ; 0,5].'}</p>`;}
+$('#dd').addEventListener('input',desc);desc();
+
+// ---------- urna ----------
+function urna(){const T=parseNum($('#ut').value),A=parseNum($('#ua').value),B=parseNum($('#ub').value),same=$('#us').value==='1';const o=$('#ures');
+  if(!(T>=2)||A<0||B<0||A>T||B>T){o.innerHTML='<div><div class="l">Revisa los datos: los casos no pueden superar el total.</div></div>';return;}
+  const con=(A/T)*(B/T),sin=(A/T)*((same?B-1:B)/(T-1));const n=x=>fmt(x,0);
+  o.innerHTML=`<div><div class="l">CON reemplazo · independientes</div><div class="n">${pct(con)}</div><div class="x">(${n(A)}/${n(T)})·(${n(B)}/${n(T)})</div></div>
+   <div><div class="l">SIN reemplazo · dependientes</div><div class="n">${pct(Math.max(sin,0))}</div><div class="x">(${n(A)}/${n(T)})·(${n(same?B-1:B)}/${n(T-1)})</div></div>`;}
+['ut','ua','ub','us'].forEach(id=>$('#'+id).addEventListener('input',urna));urna();
+})();
+</script>
+</body></html>
