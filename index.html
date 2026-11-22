@@ -88,10 +88,13 @@ textarea{width:100%;min-height:90px;font-family:var(--f-mono);font-size:13px}
 .fb{border-radius:8px;padding:10px 12px;font-size:14px}
 .fb.ok{background:var(--good-soft)}
 .fb.no{background:var(--bad-soft)}
-.fb b{display:block;margin-bottom:2px}
+.fb>b,.how>b{display:block;margin-bottom:2px}
+.how{margin-top:8px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--ink) 15%,transparent)}
+.how ol{margin:4px 0 8px;padding-left:20px}
+.how .btn{margin-top:4px}
 .qlist{display:grid;gap:14px}
 .calcs{display:grid;gap:22px}
-.calc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;gap:14px}
+.calc{scroll-margin-top:130px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;gap:14px}
 .calc .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 label{display:grid;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
 label input,label select{width:100%}
@@ -240,6 +243,16 @@ svg.bell{width:100%;height:auto;max-width:100%;display:block}
   </div>
   <div class="calcs">
 
+  <div class="calc" id="c-basica">
+    <h2>Probabilidad básica y complemento</h2>
+    <p class="muted">P = casos favorables ÷ casos totales. Si te dan la probabilidad en % (ej. 35%), escribe 35 favorables de 100.</p>
+    <div class="grid">
+      <label>Casos favorables<input id="pf" type="number" min="0" step="any" value="35"></label>
+      <label>Casos totales<input id="pt" type="number" min="0" step="any" value="100"></label>
+    </div>
+    <div class="result" id="pres"></div>
+  </div>
+
   <div class="calc" id="c-normal">
     <h2>Distribución normal (DIST.NORM)</h2>
     <div class="grid">
@@ -256,7 +269,8 @@ svg.bell{width:100%;height:auto;max-width:100%;display:block}
 
   <div class="calc" id="c-tabla">
     <h2>Tabla de contingencia: intersección, unión y condicional</h2>
-    <p class="muted">Escribe tus conteos (o %). Viene cargada la Tabla 1. Luego elige la fila A y la columna B.</p>
+    <p class="muted">Escribe tus conteos (o %), o carga una de las tablas de la Práctica. Luego elige la fila A y la columna B.</p>
+    <div class="grid"><label>Tabla<select id="cttab"><option value="t1">Tabla 1 · Biblioteca según carrera</option><option value="t2">Tabla 2 · Canal y satisfacción (%)</option></select></label></div>
     <div class="tablebox"><table class="ct" id="ct"></table></div>
     <div class="grid">
       <label>A (fila)<select id="ca"></select></label>
@@ -272,6 +286,16 @@ svg.bell{width:100%;height:auto;max-width:100%;display:block}
     <div><div class="muted" style="margin-bottom:4px"><b>Suceso A</b></div><div class="faces" id="fa"></div></div>
     <div><div class="muted" style="margin-bottom:4px"><b>Suceso B</b></div><div class="faces" id="fb"></div></div>
     <div class="result" id="dres2"></div>
+  </div>
+
+  <div class="calc" id="c-clas">
+    <h2>Clasificar asimetría y curtosis</h2>
+    <p class="muted">Si ya te dan los coeficientes, escríbelos aquí (usa coma o punto). Te dice cómo se clasifica y si cumple para ser normal.</p>
+    <div class="grid">
+      <label>Coef. de asimetría<input id="ka" type="text" inputmode="decimal" value="0,82"></label>
+      <label>Curtosis<input id="kk" type="text" inputmode="decimal" value="0"></label>
+    </div>
+    <div id="kres"></div>
   </div>
 
   <div class="calc" id="c-desc">
@@ -343,6 +367,34 @@ const Q=[
  {l:'Difícil',t:'Conjunta',q:'De 60 trabajadores, 16 son de Administración. Se eligen 2 SIN reemplazo. Escribe en % la probabilidad de que ambos sean de Administración.',n:6.8,e:'(16/60)·(15/59) = 0,0678 → 6,8%.'},
  {l:'Difícil',t:'Asimetría y curtosis',q:'Horas extra: promedio 6,35, mediana 5, asimetría 2,21, curtosis 6,37. ¿Qué interpretación es correcta?',o:['Simétrica y mesocúrtica','La mayoría hace pocas horas extra y unos pocos hacen muchas','La mayoría hace muchas horas extra','Es normal porque la media es cercana a la mediana'],a:1,e:'Asimetría positiva y leptocúrtica: los datos se concentran a la izquierda (pocas horas) con una cola larga a la derecha. Por eso media > mediana.'}
 ];
+const N1={id:'c-normal'};
+const HOW=[
+ {c:'Probabilidad básica y complemento',st:['Casos favorables: <b>35</b>','Casos totales: <b>100</b>','Mira la tarjeta <b>P(no A) · complemento</b> → 65,0%'],go:{id:'c-basica',set:{pf:35,pt:100}}},
+ {c:'Probabilidad básica y complemento',st:['Casos favorables (amarillas): <b>0</b>','Casos totales: 8 + 5 + 7 = <b>20</b>','Mira <b>Tipo de suceso</b> → Suceso imposible (0%)'],go:{id:'c-basica',set:{pf:0,pt:20}}},
+ {c:'Unión e intersección con un dado',st:['Cantidad de resultados: <b>6</b>','Suceso A (par): marca <b>2, 4, 6</b>','Suceso B (mayor que 4): marca <b>5, 6</b>','Mira <b>P(A o B) · unión</b> → 66,7%'],go:{id:'c-dado',dn:6,dA:[2,4,6],dB:[5,6]}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Ingeniería</b> · B (columna): <b>Usa: Sí</b>','Mira <b>P(A y B) · intersección</b> → 66 / 300 = 22,0%'],go:{id:'c-tabla',tab:'t1',set:{ca:0,cb:0}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Educación</b> · B (columna): <b>Usa: No</b>','Mira <b>P(A y B) · intersección</b> → 13 / 300 = 4,3%'],go:{id:'c-tabla',tab:'t1',set:{ca:2,cb:1}}},
+ {c:'Clasificar asimetría y curtosis',st:['Coef. de asimetría: <b>0,82</b>','Curtosis: déjala en 0 (no la piden)','Mira la primera etiqueta → Asimétrica positiva'],go:{id:'c-clas',set:{ka:'0,82',kk:'0'}}},
+ {c:'Clasificar asimetría y curtosis',st:['Coef. de asimetría: déjalo en 0 (no lo piden)','Curtosis: <b>−0,73</b>','Mira la segunda etiqueta → Platicúrtica'],go:{id:'c-clas',set:{ka:'0',kk:'-0,73'}}},
+ {c:'Distribución normal (DIST.NORM)',st:['Media μ: <b>170</b> · Desviación σ: <b>8</b>','Te preguntan: <b>entre a y b</b>','a: <b>154</b> · b: <b>186</b>','Sale 95,4% ≈ 95% (son μ ± 2σ)'],go:{id:'c-normal',set:{nm:170,ns:8,nt:'bt',na:154,nb:186}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Ingeniería</b> · B (columna): <b>Usa: Sí</b>','Mira <b>P(Usa: Sí | Ingeniería)</b> → 66 / 120 = 55,0%','"Si se selecciona uno de Ingeniería" = ya sabes que es de Ingeniería → divides por 120'],go:{id:'c-tabla',tab:'t1',set:{ca:0,cb:0}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Ingeniería</b> · B (columna): <b>Usa: Sí</b>','Mira <b>P(Ingeniería | Usa: Sí)</b> → 66 / <b>200</b> = 33,0%','"Sabiendo que usa la biblioteca" = el grupo conocido son los 200 que la usan'],go:{id:'c-tabla',tab:'t1',set:{ca:0,cb:0}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Salud</b> · B (columna): <b>Usa: No</b>','Mira <b>P(Usa: No | Salud)</b> → 33 / 135 = 24,4%'],go:{id:'c-tabla',tab:'t1',set:{ca:1,cb:1}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 1</b>','A (fila): <b>Salud</b> · B (columna): <b>Usa: No</b>','Mira <b>P(Salud o Usa: No) · unión</b> → (135 + 100 − 33) / 300 = 67,3%'],go:{id:'c-tabla',tab:'t1',set:{ca:1,cb:1}}},
+ {c:'Probabilidad conjunta (2 extracciones)',st:['Total: <b>10</b> · Casos tipo A (rojas): <b>6</b> · Casos tipo B (rojas): <b>6</b>','¿Mismo grupo?: <b>Sí</b>','Mira <b>CON reemplazo</b> → 36,0%'],go:{id:'c-urna',set:{ut:10,ua:6,ub:6,us:'1'}}},
+ {c:'Probabilidad conjunta (2 extracciones)',st:['Total: <b>10</b> · Casos tipo A (rojas): <b>6</b> · Casos tipo B (azules): <b>4</b>','¿Mismo grupo?: <b>No</b> (roja y azul)','Mira <b>SIN reemplazo</b> → (6/10)·(4/9) = 26,7%'],go:{id:'c-urna',set:{ut:10,ua:6,ub:4,us:'0'}}},
+ {c:'Distribución normal (DIST.NORM)',st:['Media μ: <b>923</b> · Desviación σ: <b>112,08</b>','Te preguntan: <b>más de x / al menos x</b> · x: <b>1100</b>','Mira <b>Fórmula en Excel</b> → =1-DIST.NORM(1100;…;1)'],go:{id:'c-normal',set:{nm:923,ns:112.08,nt:'ge',na:1100}}},
+ {c:'Distribución normal (DIST.NORM)',st:['Media μ: <b>923</b> · Desviación σ: <b>112,08</b>','Te preguntan: <b>x o menos</b> · x: <b>800</b>','Sale 13,6%'],go:{id:'c-normal',set:{nm:923,ns:112.08,nt:'le',na:800}}},
+ {c:'Distribución normal (DIST.NORM)',st:['Media μ: <b>923</b> · Desviación σ: <b>112,08</b>','Te preguntan: <b>entre a y b</b> · a: <b>900</b> · b: <b>1100</b>','Sale 52,4%'],go:{id:'c-normal',set:{nm:923,ns:112.08,nt:'bt',na:900,nb:1100}}},
+ {c:'Clasificar asimetría y curtosis',st:['Coef. de asimetría: <b>−0,21</b> · Curtosis: <b>1,35</b>','Etiquetas: Simétrica, pero <b>Leptocúrtica</b> → No cumple para ser normal'],go:{id:'c-clas',set:{ka:'-0,21',kk:'1,35'}}},
+ {c:null,st:['Esta es de teoría, no se calcula. Repasa en <b>Conceptos → Distribución normal</b>: los criterios son histograma en campana, media ≈ mediana ≈ moda, y asimetría y curtosis en [−0,5 ; 0,5]. La desviación estándar no es un criterio.'],go:null},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 2</b>','A (fila): <b>App</b> · B (columna): <b>Muy satisf.</b>','Mira <b>P(App | Muy satisf.)</b> → 14,5 / 36 = 40,3%','Ojo: P(Muy satisf. | App) = 46,8% es la pregunta al revés'],go:{id:'c-tabla',tab:'t2',set:{ca:2,cb:0}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 2</b>','A (fila): <b>Web</b> · B (columna): <b>Insatisf.</b>','Mira <b>P(Insatisf. | Web)</b> → 10,5 / 36 = 29,2%'],go:{id:'c-tabla',tab:'t2',set:{ca:1,cb:2}}},
+ {c:'Tabla de contingencia',st:['Tabla: <b>Tabla 2</b>','A (fila): <b>Tienda</b> · B (columna): <b>Muy satisf.</b>','Mira <b>P(Tienda o Muy satisf.) · unión</b> → (33 + 36 − 12,5) / 100 = 56,5%'],go:{id:'c-tabla',tab:'t2',set:{ca:0,cb:0}}},
+ {c:'Distribución normal (DIST.NORM)',st:['Media μ: <b>45,22</b> · Desviación σ: <b>12,87</b>','Te preguntan: <b>más de x / al menos x</b> · x: <b>60</b>','Sale 12,5%'],go:{id:'c-normal',set:{nm:45.22,ns:12.87,nt:'ge',na:60}}},
+ {c:'Probabilidad conjunta (2 extracciones)',st:['Total: <b>60</b> · Casos tipo A: <b>16</b> · Casos tipo B: <b>16</b>','¿Mismo grupo?: <b>Sí</b> (Administración y Administración)','Mira <b>SIN reemplazo</b> → (16/60)·(15/59) = 6,8%'],go:{id:'c-urna',set:{ut:60,ua:16,ub:16,us:'1'}}},
+ {c:'Clasificar asimetría y curtosis',st:['Coef. de asimetría: <b>2,21</b> · Curtosis: <b>6,37</b>','Etiquetas: Asimétrica positiva y Leptocúrtica → la mayoría hace pocas horas extra y unos pocos hacen muchas'],go:{id:'c-clas',set:{ka:'2,21',kk:'6,37'}}}
+];
 let filter='Todas';const state={};
 function render(){
   const list=$('#qlist');list.innerHTML='';
@@ -363,7 +415,12 @@ function render(){
       row.querySelector('button').onclick=go;row.querySelector('input').onkeydown=e=>{if(e.key==='Enter')go();};
       d.appendChild(row);}
     if(st){const f=document.createElement('div');f.className='fb '+(st.ok?'ok':'no');
-      f.innerHTML=`<b>${st.ok?'Correcto':'Incorrecto'}${x.n!==undefined?' · respuesta: '+fmt(x.n)+'%':''}</b>${x.e}`;d.appendChild(f);}
+      const hw=HOW[i];
+      f.innerHTML=`<b>${st.ok?'Correcto':'Incorrecto'}${x.n!==undefined?' · respuesta: '+fmt(x.n)+'%':' · respuesta: '+'abcd'[x.a]+')'}</b>${x.e}`+
+       (!st.ok&&hw?`<div class="how"><b>${hw.c?'Cómo sacarlo en Calculadoras → '+hw.c:'Cómo resolverla'}</b><ol>${hw.st.map(t=>'<li>'+t+'</li>').join('')}</ol></div>`:'');
+      if(hw&&hw.go){const bt=document.createElement('button');bt.type='button';bt.className='btn'+(st.ok?' ghost':'');bt.textContent='Abrir la calculadora con estos datos';
+        bt.onclick=()=>openCalc(hw.go);(f.querySelector('.how')||f).appendChild(bt);}
+      d.appendChild(f);}
     list.appendChild(d);});
   const done=Object.keys(state).length,ok=Object.values(state).filter(s=>s.ok).length;
   $('#score').textContent=`${ok} / ${done} correctas · ${Q.length} preguntas`;
@@ -378,10 +435,10 @@ function normal(){
   const m=parseNum($('#nm').value),s=parseNum($('#ns').value),t=$('#nt').value,a=parseNum($('#na').value),b=parseNum($('#nb').value);
   $('#nbl').hidden=t!=='bt';
   const out=$('#nres');if(!(s>0)||!isFinite(m)||!isFinite(a)||(t==='bt'&&!isFinite(b))){out.innerHTML='<div><div class="l">Revisa los datos: σ debe ser mayor que 0.</div></div>';return;}
-  let p,lo,hi,f;const M=fmt(m,2),S=fmt(s,2);
-  if(t==='le'){p=Phi(a,m,s);lo=-Infinity;hi=a;f=`=DIST.NORM(${fmt(a,2)};${M};${S};1)`;}
-  else if(t==='ge'){p=1-Phi(a,m,s);lo=a;hi=Infinity;f=`=1-DIST.NORM(${fmt(a,2)};${M};${S};1)`;}
-  else{const x1=Math.min(a,b),x2=Math.max(a,b);p=Phi(x2,m,s)-Phi(x1,m,s);lo=x1;hi=x2;f=`=DIST.NORM(${fmt(x2,2)};${M};${S};1)-DIST.NORM(${fmt(x1,2)};${M};${S};1)`;}
+  let p,lo,hi,f;const fx=v=>v.toLocaleString('es-CL',{maximumFractionDigits:4,useGrouping:false});const M=fx(m),S=fx(s);
+  if(t==='le'){p=Phi(a,m,s);lo=-Infinity;hi=a;f=`=DIST.NORM(${fx(a)};${M};${S};1)`;}
+  else if(t==='ge'){p=1-Phi(a,m,s);lo=a;hi=Infinity;f=`=1-DIST.NORM(${fx(a)};${M};${S};1)`;}
+  else{const x1=Math.min(a,b),x2=Math.max(a,b);p=Phi(x2,m,s)-Phi(x1,m,s);lo=x1;hi=x2;f=`=DIST.NORM(${fx(x2)};${M};${S};1)-DIST.NORM(${fx(x1)};${M};${S};1)`;}
   const z=x=>fmt((x-m)/s,2);
   out.innerHTML=`<div><div class="l">Probabilidad</div><div class="n">${pct(p)}</div><div class="x">${fmt(p,4)}</div></div>
    <div style="grid-column:span 2"><div class="l">Fórmula en Excel</div><div class="x" style="font-size:13px;color:var(--ink)">${f}</div></div>
@@ -398,8 +455,10 @@ function normal(){
 ['nm','ns','nt','na','nb'].forEach(id=>$('#'+id).addEventListener('input',normal));normal();
 
 // ---------- tabla de contingencia ----------
-const rows=['Ingeniería','Salud','Educación'],cols=['Usa: Sí','Usa: No'];const cells=[[66,54],[102,33],[32,13]];
-function buildCT(){let h='<thead><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'<th>Total</th></tr></thead><tbody>';
+const TABLES={t1:{rows:['Ingeniería','Salud','Educación'],cols:['Usa: Sí','Usa: No'],cells:[[66,54],[102,33],[32,13]]},
+ t2:{rows:['Tienda','Web','App'],cols:['Muy satisf.','Satisf.','Insatisf.'],cells:[[12.5,14,6.5],[9,16.5,10.5],[14.5,11,5.5]]}};
+let rows,cols,cells;
+function buildCT(){const T=TABLES[$('#cttab').value];rows=T.rows;cols=T.cols;cells=T.cells;let h='<thead><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'<th>Total</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{h+=`<tr><td>${r}</td>`+cols.map((c,j)=>`<td><input type="number" min="0" step="any" id="ct${i}${j}" value="${cells[i][j]}"></td>`).join('')+`<td id="rt${i}"></td></tr>`;});
   h+='<tr class="tot"><td>Total</td>'+cols.map((c,j)=>`<td id="cto${j}"></td>`).join('')+'<td id="gt"></td></tr></tbody>';$('#ct').innerHTML=h;
   $('#ca').innerHTML=rows.map((r,i)=>`<option value="${i}">${r}</option>`).join('');$('#cb').innerHTML=cols.map((c,j)=>`<option value="${j}">${c}</option>`).join('');
@@ -414,7 +473,7 @@ function ct(){const v=rows.map((r,i)=>cols.map((c,j)=>parseNum($('#ct'+i+j).valu
    +card(`P(${A} o ${B}) · unión`,(rt[i]+ctot[j]-c)/g,`(${n(rt[i])} + ${n(ctot[j])} − ${n(c)}) / ${n(g)}`)
    +card(`P(${B} | ${A}) · dado que es ${A}`,c/rt[i],`${n(c)} / ${n(rt[i])} → total de ${A}`)
    +card(`P(${A} | ${B}) · dado que es ${B}`,c/ctot[j],`${n(c)} / ${n(ctot[j])} → total de ${B}`);}
-buildCT();ct();
+$('#cttab').addEventListener('change',()=>{buildCT();ct();});buildCT();ct();
 
 // ---------- dado: unión e intersección ----------
 let selA=new Set([2,4,6]),selB=new Set([5,6]);
@@ -432,6 +491,35 @@ function dado(){const n=Math.min(20,Math.max(2,parseInt($('#dn').value)||6));
    +c('P(no A) · complemento',n-A.length,`1 − ${A.length}/${n}`);}
 $('#dn').addEventListener('input',buildFaces);buildFaces();
 
+// ---------- básica ----------
+function basica(){const f=parseNum($('#pf').value),t=parseNum($('#pt').value),o=$('#pres');
+  if(!(t>0)||!(f>=0)||f>t){o.innerHTML='<div><div class="l">Revisa los datos: los favorables no pueden superar el total.</div></div>';return;}
+  const p=f/t,tipo=p===0?'Suceso imposible':p===1?'Suceso seguro':'Suceso posible';const n=x=>fmt(x,x%1?2:0);
+  o.innerHTML=`<div><div class="l">P(A)</div><div class="n">${pct(p)}</div><div class="x">${n(f)} / ${n(t)}</div></div>
+   <div><div class="l">P(no A) · complemento</div><div class="n">${pct(1-p)}</div><div class="x">1 − ${n(f)}/${n(t)}</div></div>
+   <div><div class="l">Tipo de suceso</div><div class="n" style="font-size:17px">${tipo}</div><div class="x">0% imposible · 100% seguro</div></div>`;}
+['pf','pt'].forEach(id=>$('#'+id).addEventListener('input',basica));basica();
+
+// ---------- clasificar ----------
+function clasif(sk,ku){const ca=sk>0.5?['p','Asimétrica positiva (media > mediana)']:sk<-0.5?['n','Asimétrica negativa (media < mediana)']:['s','Simétrica'];
+  const ck=ku>0.5?['p','Leptocúrtica (alta concentración)']:ku<-0.5?['n','Platicúrtica (baja concentración)']:['s','Mesocúrtica'];
+  const norm=Math.abs(sk)<=0.5&&Math.abs(ku)<=0.5;
+  return `<div class="toolbar"><span class="tag ${ca[0]}">${ca[1]}</span><span class="tag ${ck[0]}">${ck[1]}</span><span class="tag ${norm?'s':'n'}">${norm?'Cumple asimetría y curtosis para ser normal':'No cumple los criterios de normalidad'}</span></div>
+   <p class="muted">${norm?'Revisa también que media, mediana y moda sean parecidas y que el histograma tenga forma de campana.':'Para ser normal, asimetría y curtosis deben estar ambas en [−0,5 ; 0,5].'}</p>`;}
+function kcalc(){const sk=parseNum($('#ka').value),ku=parseNum($('#kk').value);
+  $('#kres').innerHTML=isFinite(sk)&&isFinite(ku)?clasif(sk,ku):'<p class="muted">Escribe ambos coeficientes.</p>';}
+['ka','kk'].forEach(id=>$('#'+id).addEventListener('input',kcalc));kcalc();
+
+// ---------- abrir calculadora con los datos de una pregunta ----------
+function openCalc(c){
+  if(location.hash!=='#calculadoras')history.pushState(null,'','#calculadoras');show();
+  if(c.tab){$('#cttab').value=c.tab;buildCT();}
+  if(c.dA){$('#dn').value=c.dn||6;selA=new Set(c.dA);selB=new Set(c.dB);buildFaces();}
+  for(const k in (c.set||{}))$('#'+k).value=c.set[k];
+  basica();normal();ct();urna();kcalc();
+  const el=$('#'+c.id);el.scrollIntoView({block:'start'});
+  el.animate&&el.animate([{boxShadow:'0 0 0 3px var(--accent)'},{boxShadow:'0 0 0 0 transparent'}],{duration:1600});}
+
 // ---------- descriptivos ----------
 const SUELDO=[850,880,820,750,800,740,860,1000,800,780,900,890,860,750,850,930,700,800,640,710,650,820,710,880,870,830,570,790,840,860,680,800,740,760,970,760,850,950,790,840,860,860,720,860,1000,680,940,860,780,1070,930,720,860,910,830,930,840,920,1010,780];
 $('#dd').value=SUELDO.join('\n');
@@ -445,11 +533,7 @@ function desc(){const x=$('#dd').value.split(/[\s;\n]+/).map(parseNum).filter(is
   const c=(l,v,f)=>`<div><div class="l">${l}</div><div class="n">${v}</div><div class="x">${f}</div></div>`;
   out.innerHTML=c('n (datos)',n,'=CONTAR(…)')+c('Promedio',fmt(m,2),'=PROMEDIO(…)')+c('Mediana',fmt(med,2),'=MEDIANA(…)')+c('Moda',moda===null?'No hay':fmt(moda,2),moda===null?'#N/A: ningún dato se repite':'=MODA(…) · se repite '+mx+' veces')
    +c('Desv. estándar',fmt(sd,2),'=DESVEST(…)')+c('Asimetría',fmt(sk,2),'=COEFICIENTE.ASIMETRIA(…)')+c('Curtosis',fmt(ku,2),'=CURTOSIS(…)');
-  const ca=sk>0.5?['p','Asimétrica positiva (media > mediana)']:sk<-0.5?['n','Asimétrica negativa (media < mediana)']:['s','Simétrica'];
-  const ck=ku>0.5?['p','Leptocúrtica (alta concentración)']:ku<-0.5?['n','Platicúrtica (baja concentración)']:['s','Mesocúrtica'];
-  const norm=Math.abs(sk)<=0.5&&Math.abs(ku)<=0.5;
-  $('#dclass').innerHTML=`<div class="toolbar"><span class="tag ${ca[0]}">${ca[1]}</span><span class="tag ${ck[0]}">${ck[1]}</span><span class="tag ${norm?'s':'n'}">${norm?'Cumple asimetría y curtosis para ser normal':'No cumple los criterios de normalidad'}</span></div>
-   <p class="muted">${norm?'Revisa también que media, mediana y moda sean parecidas y que el histograma tenga forma de campana.':'Para ser normal, asimetría y curtosis deben estar ambas en [−0,5 ; 0,5].'}</p>`;}
+  $('#dclass').innerHTML=clasif(sk,ku);}
 $('#dd').addEventListener('input',desc);desc();
 
 // ---------- urna ----------
